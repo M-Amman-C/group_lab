@@ -1,12 +1,5 @@
 #!/bin/bash
 
-if [ "$EUID" -ne 0 ]; then
-  echo "Script needs root. Re-running with sudo..."
-  exec sudo "$0" "$@"
-fi
-
-
-
 # Functions
 results="{\"maximum_marks\": 60, \"obtained_maximum_marks\": 0, \"tasks\": []}"
 
