@@ -5,7 +5,7 @@ results="{\"maximum_marks\": 60, \"obtained_maximum_marks\": 0, \"tasks\": []}"
 
 if ! command -v jq &> /dev/null; then
     echo "jq not found, installing..."
-    sudo apt install -y jq
+    echo "student" | sudo -S apt install -y jq
 fi
 
 
