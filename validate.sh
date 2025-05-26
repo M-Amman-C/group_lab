@@ -5,7 +5,7 @@ results="{\"maximum_marks\": 60, \"obtained_maximum_marks\": 0, \"tasks\": []}"
 
 if ! command -v jq &> /dev/null; then
     echo "jq not found, installing..."
-    echo "student" | sudo -S apt install -y jq
+    echo "student" | sudo -S apt install -y jq &> /dev/null
 fi
 
 
@@ -15,7 +15,7 @@ fi
 
 test1_obtained_marks=0
 
-if grep "designers" "/etc/group"; then
+if grep "designers" "/etc/group" &> /dev/null; then
 	test1_obtained_marks=$((test1_obtained_marks + 10))
 fi
 
@@ -34,12 +34,11 @@ results=$(echo "$results" | jq ".obtained_maximum_marks += $test1_obtained_marks
 
 
 #Q-2
-
 test2_obtained_marks=0
 expected_gid=2000
-actual_gid=$(getent group marketing | cut -d: -f3)
+actual_gid=$(echo "student" | sudo -S getent group marketing | cut -d: -f3)
 
-if grep "marketing" "/etc/group"; then
+if echo "student" | sudo -S grep "marketing" "/etc/group" &> /dev/null; then
 	if [[ "$actual_gid" == "$expected_gid" ]]; then
 		test2_obtained_marks=$((test2_obtained_marks + 10))
 	fi
@@ -59,7 +58,6 @@ results=$(echo "$results" | jq ".obtained_maximum_marks += $test2_obtained_marks
 
 
 #Q-3
-
 test3_obtained_marks=0
 test3_failed_properties=()
 
@@ -70,19 +68,19 @@ else
 fi
 
 
-if grep "admingroup" "/etc/group"; then
+if grep "admingroup" "/etc/group" &> /dev/null; then
         test3_obtained_marks=$((test3_obtained_marks + 5))
 else
 	test3_failed_properties+=("Group creation")
 fi
 
-if getent group admingroup | grep "adminuser"; then
+if echo "student" | sudo -S getent group admingroup | grep "adminuser" &> /dev/null; then
         test3_obtained_marks=$((test3_obtained_marks + 5))
 else
         test3_failed_properties+=("User not in group")
 fi
 
-if grep "%admingroup ALL=(ALL:ALL) ALL" "/etc/sudoers.d/admin_group"; then
+if echo "student" | sudo -S grep "%admingroup ALL=(ALL:ALL) ALL" "/etc/sudoers.d/admin_group" &> /dev/null; then
         test3_obtained_marks=$((test3_obtained_marks + 5))
 else
         test3_failed_properties+=("Sudo")
@@ -105,10 +103,9 @@ results=$(echo "$results" | jq ".obtained_maximum_marks += $test3_obtained_marks
 
 
 #Q-4
-
 test4_obtained_marks=0
 
-if grep "uiux" "/etc/group"; then
+if grep "uiux" "/etc/group" &> /dev/null; then
         test4_obtained_marks=$((test4_obtained_marks + 10))
 fi
 
@@ -130,13 +127,12 @@ results=$(echo "$results" | jq ".obtained_maximum_marks += $test4_obtained_marks
 
 
 #Q-5
-
 test5_obtained_marks=0
 test5_failed_properties=()
 
 group_field=$(ls -l /tmp/example.txt | awk '{print $4}')
 
-if grep "tempgroup" "/etc/group"; then
+if grep "tempgroup" "/etc/group" &> /dev/null; then
 	test5_failed_properties="Group tempgroup still exists."
 else
 	if [[ "$group_field" =~ ^[0-9]+$ ]]; then
@@ -161,4 +157,3 @@ results=$(echo "$results" | jq ".obtained_maximum_marks += $test5_obtained_marks
 
 
 echo $results | jq
-
